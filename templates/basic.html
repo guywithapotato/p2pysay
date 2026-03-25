@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>E-Ink Text - Basic Mode</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>E-Ink Text (Basic)</h1>
+      <p class="hint">No JavaScript required. Refresh this page to see new messages.</p>
+      <p class="hint"><a href="/">Back to Live Mode</a></p>
+
+      <section class="messages">
+        {% for msg in messages %}
+          <article class="bubble">
+            <div class="meta">{{ msg.sender }} • {{ msg.created_at }}</div>
+            <p>{{ msg.body }}</p>
+          </article>
+        {% endfor %}
+      </section>
+
+      <form method="post" action="/basic/send" class="compose">
+        <label>
+          Name
+          <input name="sender" maxlength="40" required />
+        </label>
+
+        <label>
+          Message
+          <textarea id="basic-body" name="body" maxlength="1000" rows="3" required></textarea>
+        </label>
+
+        <div class="quick-words" aria-label="Quick text words">
+          <button type="button" class="quick-word" onclick="addBasicWord('yes')">yes</button>
+          <button type="button" class="quick-word" onclick="addBasicWord('no')">no</button>
+          <button type="button" class="quick-word" onclick="addBasicWord('what')">what</button>
+          <button type="button" class="quick-word" onclick="addBasicWord('why')">why</button>
+          <button type="button" class="quick-word" onclick="addBasicWord('who')">who</button>
+        </div>
+
+        <button type="submit">Send</button>
+      </form>
+          <script>
+      function addBasicWord(word) {
+        var node = document.getElementById("basic-body");
+        var current = node.value.replace(/^\s+|\s+$/g, "");
+        node.value = current ? (current + " " + word) : word;
+        node.focus();
+      }
+      </script>
+    </main>
+  </body>
+</html>
