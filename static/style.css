@@ -1,0 +1,78 @@
+:root {
+  color-scheme: light;
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: #111;
+}
+
+.app {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+}
+
+.hint {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+}
+
+.messages {
+  border: 2px solid #000;
+  padding: 0.75rem;
+  min-height: 300px;
+  max-height: 55vh;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.bubble {
+  border: 1px solid #000;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.compose {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+input,
+textarea,
+button {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #000;
+  font: inherit;
+  box-sizing: border-box;
+  background: #fff;
+  color: #111;
+}
+
+button {
+  font-weight: 700;
+}
+
+
+.quick-words {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.quick-word {
+  padding: 0.4rem 0.2rem;
+}

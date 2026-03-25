@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>E-Ink Text</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>E-Ink Text</h1>
+      <p class="hint">Simple texting prototype for Kobo + Kindle. For ultra-old browsers, use <a href="/basic">Basic Mode</a>.</p>
+
+      <section id="messages" class="messages" aria-live="polite"></section>
+
+      <form id="compose" class="compose">
+        <label>
+          Name
+          <input id="sender" maxlength="40" required />
+        </label>
+
+        <label>
+          Message
+          <textarea id="body" maxlength="1000" rows="3" required></textarea>
+        </label>
+
+        <div class="quick-words" aria-label="Quick text words">
+          <button type="button" class="quick-word" data-word="yes">yes</button>
+          <button type="button" class="quick-word" data-word="no">no</button>
+          <button type="button" class="quick-word" data-word="what">what</button>
+          <button type="button" class="quick-word" data-word="why">why</button>
+          <button type="button" class="quick-word" data-word="who">who</button>
+        </div>
+
+        <button type="submit">Send</button>
+      </form>
+    </main>
+
+    <script>
+      var messagesNode = document.getElementById("messages");
+      var formNode = document.getElementById("compose");
+      var senderNode = document.getElementById("sender");
+      var bodyNode = document.getElementById("body");
+
+      function xhr(method, url, payload, callback) {
+        var req = new XMLHttpRequest();
+        req.open(method, url, true);
+        req.setRequestHeader("Content-Type", "application/json");
+        req.onreadystatechange = function () {
+          if (req.readyState === 4) {
+            callback(req.status, req.responseText);
+          }
+        };
+        req.send(payload ? JSON.stringify(payload) : null);
+      }
+
+      function render(messages) {
+        messagesNode.innerHTML = "";
+        var i;
+        for (i = 0; i < messages.length; i += 1) {
+          var msg = messages[i];
+          var article = document.createElement("article");
+          article.className = "bubble";
+
+          var header = document.createElement("div");
+          header.className = "meta";
+          header.textContent = msg.sender + " • " + msg.created_at;
+
+          var text = document.createElement("p");
+          text.textContent = msg.body;
+
+          article.appendChild(header);
+          article.appendChild(text);
+          messagesNode.appendChild(article);
+        }
+
+        messagesNode.scrollTop = messagesNode.scrollHeight;
+      }
+
+      function loadMessages() {
+        xhr("GET", "/api/messages?limit=100", null, function (status, responseText) {
+          if (status >= 200 && status < 300) {
+            render(JSON.parse(responseText));
+          }
+        });
+      }
+
+
+      function addQuickWord(word) {
+        var current = bodyNode.value.replace(/^\s+|\s+$/g, "");
+        bodyNode.value = current ? (current + " " + word) : word;
+        bodyNode.focus();
+      }
+
+      var quickWordButtons = document.getElementsByClassName("quick-word");
+      var j;
+      for (j = 0; j < quickWordButtons.length; j += 1) {
+        quickWordButtons[j].onclick = function () {
+          addQuickWord(this.getAttribute("data-word"));
+        };
+      }
+
+      formNode.onsubmit = function (event) {
+        event.preventDefault();
+
+        var sender = senderNode.value.replace(/^\s+|\s+$/g, "");
+        var body = bodyNode.value.replace(/^\s+|\s+$/g, "");
+        if (!sender || !body) {
+          return;
+        }
+
+        xhr("POST", "/api/messages", { sender: sender, body: body }, function (status) {
+          if (status >= 200 && status < 300) {
+            bodyNode.value = "";
+            loadMessages();
+          }
+        });
+      };
+
+      loadMessages();
+      setInterval(loadMessages, 5000);
+    </script>
+  </body>
+</html>
